@@ -35,7 +35,7 @@ namespace laser_geometry
 {
 
   void
-    LaserProjection::projectLaser_ (const sensor_msgs::LaserScan& scan_in, sensor_msgs::PointCloud & cloud_out, double range_cutoff, 
+    LaserProjection::projectLaser_ (const sensor_msgs::LaserScan& scan_in, sensor_msgs::PointCloud & cloud_out, double range_cutoff,
                                    bool preservative, int mask)
   {
     boost::numeric::ublas::matrix<double> ranges(2, scan_in.ranges.size());
@@ -46,7 +46,6 @@ namespace laser_geometry
         ranges(0,index) = (double) scan_in.ranges[index];
         ranges(1,index) = (double) scan_in.ranges[index];
       }
-    
 
     //Do the projection
     //    NEWMAT::Matrix output = NEWMAT::SP(ranges, getUnitVectors(scan_in.angle_min, scan_in.angle_max, scan_in.angle_increment));
@@ -59,7 +58,7 @@ namespace laser_geometry
     // Define 4 indices in the channel array for each possible value type
     int idx_intensity = -1, idx_index = -1, idx_distance = -1, idx_timestamp = -1;
 
-    cloud_out.channels.resize(0);    
+    cloud_out.channels.resize(0);
 
     // Check if the intensity bit is set
     if ((mask & channel_option::Intensity) && scan_in.intensities.size() > 0)
@@ -70,7 +69,7 @@ namespace laser_geometry
       cloud_out.channels[0].values.resize (scan_in.intensities.size());
       idx_intensity = 0;
     }
-    
+
     // Check if the index bit is set
     if (mask & channel_option::Index)
     {
@@ -103,18 +102,17 @@ namespace laser_geometry
     if (range_cutoff < 0)
       range_cutoff = scan_in.range_max;
     else
-      range_cutoff = std::min(range_cutoff, (double)scan_in.range_max); 
-    
+      range_cutoff = std::min(range_cutoff, (double)scan_in.range_max);
+
     unsigned int count = 0;
     for (unsigned int index = 0; index< scan_in.ranges.size(); index++)
     {
       if (preservative || ((ranges(0,index) < range_cutoff) && (ranges(0,index) >= scan_in.range_min))) //if valid or preservative
       {
-	  
         cloud_out.points[count].x = output(0,index);
         cloud_out.points[count].y = output(1,index);
         cloud_out.points[count].z = 0.0;
-	  
+
         //double x = cloud_out.points[count].x;
         //double y = cloud_out.points[count].y;
         //if(x*x + y*y < scan_in.range_min * scan_in.range_min){
@@ -143,7 +141,6 @@ namespace laser_geometry
         count++;
       }
     }
-   
 
     //downsize if necessary
     cloud_out.points.resize (count);
@@ -275,7 +272,7 @@ const boost::numeric::ublas::matrix<double>& LaserProjection::getUnitVectors_(do
       cloud_out.channels.erase(cloud_out.channels.begin() + index_channel_idx);
   }
 
-  void LaserProjection::projectLaser_ (const sensor_msgs::LaserScan& scan_in, 
+  void LaserProjection::projectLaser_ (const sensor_msgs::LaserScan& scan_in,
                                       sensor_msgs::PointCloud2 &cloud_out,
                                       double range_cutoff,
                                       int channel_options)
@@ -418,7 +415,7 @@ const boost::numeric::ublas::matrix<double>& LaserProjection::getUnitVectors_(do
     if (range_cutoff < 0)
       range_cutoff = scan_in.range_max;
     else
-      range_cutoff = std::min(range_cutoff, (double)scan_in.range_max); 
+      range_cutoff = std::min(range_cutoff, (double)scan_in.range_max);
 
     unsigned int count = 0;
     for (size_t i = 0; i < n_pts; ++i)
@@ -501,7 +498,7 @@ const boost::numeric::ublas::matrix<double>& LaserProjection::getUnitVectors_(do
 
   void LaserProjection::transformLaserScanToPointCloud_ (const std::string &target_frame, 
                                                         const sensor_msgs::LaserScan &scan_in,
-                                                        sensor_msgs::PointCloud2 &cloud_out, 
+                                                        sensor_msgs::PointCloud2 &cloud_out,
                                                         tf::Transformer &tf, 
                                                         double range_cutoff,
                                                         int channel_options)
@@ -568,7 +565,7 @@ const boost::numeric::ublas::matrix<double>& LaserProjection::getUnitVectors_(do
       //find the index of the point
       uint32_t pt_index;
       memcpy(&pt_index, &cloud_out.data[i * cloud_out.point_step + index_offset], sizeof(uint32_t));
-      
+
       // Assume constant motion during the laser-scan, and use slerp to compute intermediate transforms
       tfScalar ratio = pt_index * ranges_norm;
 
